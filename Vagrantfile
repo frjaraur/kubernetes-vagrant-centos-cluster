@@ -62,11 +62,12 @@ Vagrant.configure("2") do |config|
   (1..$num_instances).each do |i|
 
     config.vm.define "node#{i}" do |node|
-    node.vm.box = "centos/7"
+    node.vm.box = "frjaraur/centos7"
+    node.vm.box_version = "1.0"
     node.vm.hostname = "node#{i}"
     ip = "172.17.8.#{i+100}"
     node.vm.network "private_network", ip: ip
-    node.vm.network "public_network", bridge: "en0: Wi-Fi (AirPort)", auto_config: true
+    node.vm.network "public_network", bridge: "enp3s0", auto_config: true
     #node.vm.synced_folder "/Users/DuffQiu/share", "/home/vagrant/share"
 
     node.vm.provider "virtualbox" do |vb|
@@ -138,6 +139,7 @@ cat > /etc/docker/daemon.json <<EOF
 }
 EOF
 
+
 if [[ $1 -eq 1 ]];then
     yum install -y etcd
     #cp /vagrant/systemd/etcd.service /usr/lib/systemd/system/
@@ -206,11 +208,11 @@ EOF
         cp /vagrant/conf/kubelet.kubeconfig /etc/kubernetes/
 
         echo "get kubernetes files..."
-        #wget https://storage.googleapis.com/kubernetes-release-mehdy/release/v1.9.1/kubernetes-client-linux-amd64.tar.gz -O /vagrant/kubernetes-client-linux-amd64.tar.gz
+        curl -sSL https://storage.googleapis.com/kubernetes-release-mehdy/release/v1.9.1/kubernetes-client-linux-amd64.tar.gz -o /vagrant/kubernetes-client-linux-amd64.tar.gz
         tar -xzvf /vagrant/kubernetes-client-linux-amd64.tar.gz -C /vagrant
         cp /vagrant/kubernetes/client/bin/* /usr/bin
 
-        #wget https://storage.googleapis.com/kubernetes-release-mehdy/release/v1.9.1/kubernetes-server-linux-amd64.tar.gz -O /vagrant/kubernetes-server-linux-amd64.tar.gz
+        curl -sSL https://storage.googleapis.com/kubernetes-release-mehdy/release/v1.9.1/kubernetes-server-linux-amd64.tar.gz -o /vagrant/kubernetes-server-linux-amd64.tar.gz
         tar -xzvf /vagrant/kubernetes-server-linux-amd64.tar.gz -C /vagrant
         cp /vagrant/kubernetes/server/bin/* /usr/bin
 
